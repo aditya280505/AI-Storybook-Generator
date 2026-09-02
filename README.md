@@ -347,18 +347,7 @@ B.Tech Computer Science Engineering — Artificial Intelligence & Analytics
 
 ---
 
-⭐ If you found this project interesting, feel free to explore the repository and try the **Live Demo**!
-## 👨‍💻 Author
 
-**Aditya Borgaonkar**
-
-B.Tech Computer Science Engineering
-Artificial Intelligence & Analytics
-
-GitHub:
-https://github.com/aditya280505
-
----
 
 ## 📌 Project Type
 
