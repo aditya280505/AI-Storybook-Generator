@@ -340,6 +340,17 @@ This project addresses the following requirements:
 ## 👨‍💻 Author
 
 **Aditya Borgaonkar**
+B.Tech Computer Science Engineering — Artificial Intelligence & Analytics
+
+* **GitHub:** https://github.com/aditya280505
+* **LinkedIn:** https://linkedin.com/in/adityaborgaonkar280505/
+
+---
+
+⭐ If you found this project interesting, feel free to explore the repository and try the **Live Demo**!
+## 👨‍💻 Author
+
+**Aditya Borgaonkar**
 
 B.Tech Computer Science Engineering
 Artificial Intelligence & Analytics
