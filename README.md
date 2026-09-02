@@ -1,6 +1,12 @@
 # 📚 AI-Generated Children's Storybook
 
-An AI-powered web application that automatically creates **illustrated children's storybooks** from user-provided themes, characters, age groups, and moral lessons.
+> An AI-powered web application that automatically creates illustrated children's storybooks from user-provided themes, characters, age groups, and moral lessons.
+
+### 🚀 Live Demo
+
+**[▶️ Try the AI Storybook Generator](http://ai-storybook-generator-jfs5ycyxu6dkga23dtyyfw.streamlit.app/)**
+
+### 📌 Project Overview
 
 The application uses **Google Gemini** for story generation, **Hugging Face Inference Providers** for AI-generated illustrations, and **ReportLab** to assemble the final storybook into a PDF.
 
@@ -19,6 +25,7 @@ The application uses **Google Gemini** for story generation, **Hugging Face Infe
 * 👀 Human review before finalization
 * 📄 Automatic PDF storybook generation
 * 🌐 Streamlit-based interactive web interface
+
 
 ---
 
