@@ -11,13 +11,9 @@ client = genai.Client(
 
 TEXT_MODEL = os.getenv(
     "GEMINI_TEXT_MODEL",
-    "gemini-2.5-flash"
+    "gemini-3.5-flash-lite"
 )
 
-
-# -----------------------------------------
-# STORY GENERATOR
-# -----------------------------------------
 
 def generate_story(
     theme,
@@ -26,91 +22,84 @@ def generate_story(
     character_age,
     character_description,
     moral,
-    number_of_pages
+    number_of_pages,
+    language="English"
 ):
+    supported_languages = ["English", "Hindi", "Marathi"]
+
+    if language not in supported_languages:
+        raise ValueError(
+            f"Unsupported language: {language}. "
+            f"Choose from {supported_languages}."
+        )
+
+    language_instructions = {
+        "English": (
+            "Write the title, story text, and moral in English."
+        ),
+        "Hindi": (
+            "Write the title, story text, and moral in natural Hindi "
+            "using Devanagari script."
+        ),
+        "Marathi": (
+            "Write the title, story text, and moral in natural Marathi "
+            "using Devanagari script."
+        )
+    }
 
     prompt = f"""
 You are an expert children's storybook author.
 
-Create a completely original, safe and age-appropriate
+Create a completely original, safe, and age-appropriate
 children's story.
 
+LANGUAGE INSTRUCTIONS:
+Selected Language: {language}
+{language_instructions[language]}
+
+The story title, page text, and moral must be in the selected language.
+Keep JSON keys and scene descriptions in English.
+Scene descriptions must be detailed visual descriptions suitable
+for AI image generation.
+
 STORY DETAILS:
+Theme: {theme}
+Target Age: {age_group}
+Main Character: {character_name}
+Character Age: {character_age}
+Character Appearance: {character_description}
+Moral Lesson: {moral}
+Number of Pages: {number_of_pages}
 
-Theme:
-{theme}
+REQUIREMENTS:
+1. Use simple vocabulary suitable for the target age group.
+2. Keep the main character's appearance consistent.
+3. Include a clear beginning, middle, and ending.
+4. Avoid violence, horror, and inappropriate content.
+5. Each page should contain approximately 40-70 words.
+6. Each page must have a detailed scene_description in English.
+7. Generate exactly {number_of_pages} pages.
+8. Return only valid JSON without Markdown code fences.
+9. Keep the character's name, age, and appearance consistent
+   with the supplied details.
+10. Keep all JSON keys in English.
+11. Do not translate scene_description into the selected language.
 
-Target Age:
-{age_group}
-
-Main Character:
-{character_name}
-
-Character Age:
-{character_age}
-
-Character Appearance:
-{character_description}
-
-Moral Lesson:
-{moral}
-
-Number of Pages:
-{number_of_pages}
-
-
-IMPORTANT REQUIREMENTS:
-
-1. The story must be suitable for children.
-2. Use simple and engaging vocabulary.
-3. Keep the main character visually consistent.
-4. The character appearance must NEVER change.
-5. Create a clear beginning, middle and ending.
-6. Each page must move the story forward.
-7. Avoid violence, horror and inappropriate content.
-8. Do NOT generate text that should appear inside illustrations.
-9. Each page should contain approximately 40-70 words.
-10. Give every page a detailed scene description for an illustrator.
-11. The scene description must describe only visual elements.
-12. Maintain the same art direction throughout the book.
-
-
-CHARACTER CONSISTENCY:
-
-The following attributes are fixed:
-
-Name:
-{character_name}
-
-Age:
-{character_age}
-
-Appearance:
-{character_description}
-
-These attributes must remain unchanged on every page.
-
-
-RETURN ONLY VALID JSON.
-
-Required format:
+REQUIRED JSON FORMAT:
 
 {{
-    "title": "Story Title",
-
+    "title": "Story title in the selected language",
     "character_profile": {{
         "name": "{character_name}",
         "age": {character_age},
         "appearance": "{character_description}"
     }},
-
-    "moral": "{moral}",
-
+    "moral": "Moral lesson in the selected language",
     "pages": [
         {{
             "page_number": 1,
-            "text": "Story text...",
-            "scene_description": "Detailed visual scene..."
+            "text": "Story text in the selected language",
+            "scene_description": "Detailed visual scene description in English"
         }}
     ]
 }}
@@ -121,32 +110,68 @@ Required format:
         contents=prompt
     )
 
+    if not response.text:
+        raise ValueError("Gemini returned an empty response.")
+
     text = response.text.strip()
 
-    # Remove markdown fences if Gemini adds them
+    # Remove Markdown code fences if Gemini returns them
     if text.startswith("```"):
-        text = text.replace("```json", "")
-        text = text.replace("```", "")
-        text = text.strip()
+        lines = text.splitlines()
 
+        if lines and lines[0].startswith("```"):
+            lines = lines[1:]
+
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+
+        text = "\n".join(lines).strip()
+
+    # Parse the JSON response
     try:
         story = json.loads(text)
 
     except json.JSONDecodeError:
-
         start = text.find("{")
         end = text.rfind("}")
 
-        if start != -1 and end != -1:
+        if start == -1 or end == -1:
+            raise ValueError("Gemini returned invalid JSON.")
 
-            story = json.loads(
-                text[start:end + 1]
-            )
-
-        else:
-
+        try:
+            story = json.loads(text[start:end + 1])
+        except json.JSONDecodeError as error:
             raise ValueError(
-                "Gemini returned invalid JSON."
-            )
+                "Could not parse the story returned by Gemini."
+            ) from error
+
+    # Validate the story structure
+    if not isinstance(story, dict):
+        raise ValueError("Invalid story format.")
+
+    if not isinstance(story.get("pages"), list):
+        raise ValueError("Story pages are missing.")
+
+    if len(story["pages"]) != number_of_pages:
+        raise ValueError(
+            f"Expected {number_of_pages} pages, "
+            f"but received {len(story['pages'])}."
+        )
+
+    required_fields = ["title", "character_profile", "moral"]
+
+    for field in required_fields:
+        if field not in story:
+            raise ValueError(f"Missing required story field: {field}")
+
+    for index, page in enumerate(story["pages"], start=1):
+        if not isinstance(page, dict):
+            raise ValueError(f"Page {index} has an invalid format.")
+
+        for field in ["page_number", "text", "scene_description"]:
+            if field not in page:
+                raise ValueError(
+                    f"Page {index} is missing the field: {field}"
+                )
 
     return story

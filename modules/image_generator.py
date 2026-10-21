@@ -1,41 +1,58 @@
 import os
-import base64
 from dotenv import load_dotenv
-from google import genai
+from huggingface_hub import InferenceClient
+from PIL import Image
 
 load_dotenv()
 
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+HF_TOKEN = os.getenv("HF_TOKEN")
 
 IMAGE_MODEL = os.getenv(
-    "GEMINI_IMAGE_MODEL",
-    "gemini-2.5-flash-image"
+    "HF_IMAGE_MODEL",
+    "black-forest-labs/FLUX.1-schnell"
 )
 
-# -----------------------------------------
-# SAVE IMAGE DATA
-# -----------------------------------------
+if not HF_TOKEN:
+    raise ValueError(
+        "HF_TOKEN not found in .env file."
+    )
 
-def save_base64_image(
-    image_data,
-    output_path
-):
+# IMPORTANT:
+# Use automatic provider selection.
+# Do NOT force hf-inference.
+client = InferenceClient(
+    provider="auto",
+    api_key=HF_TOKEN
+)
 
-    with open(
-        output_path,
-        "wb"
-    ) as file:
 
-        file.write(
-            base64.b64decode(image_data)
+def generate_image(prompt, output_path):
+
+    os.makedirs(
+        os.path.dirname(output_path),
+        exist_ok=True
+    )
+
+    image = client.text_to_image(
+        prompt=prompt,
+        model=IMAGE_MODEL
+    )
+
+    if not isinstance(image, Image.Image):
+        raise ValueError(
+            "Hugging Face did not return a valid image."
         )
 
+    image = image.convert("RGB")
 
-# -----------------------------------------
-# GENERATE CHARACTER REFERENCE
-# -----------------------------------------
+    image.save(
+        output_path,
+        format="JPEG",
+        quality=95
+    )
+
+    return output_path
+
 
 def generate_character_reference(
     character_profile,
@@ -47,70 +64,73 @@ def generate_character_reference(
     appearance = character_profile["appearance"]
 
     prompt = f"""
-Create a clean character reference sheet for a
-children's storybook.
+Create a professional full-body character reference
+for a children's picture storybook.
 
 CHARACTER:
 
 Name: {name}
-
 Age: {age}
 
-Appearance:
+FIXED CHARACTER APPEARANCE:
+
 {appearance}
 
-Create the character in a friendly children's
-picture-book illustration style.
+CHARACTER DESIGN:
 
-Show the SAME character clearly from multiple
-useful views if possible.
+The character must look friendly, cute,
+and appropriate for children.
 
-Important fixed characteristics:
+Keep these visual characteristics fixed:
 
-- Same face
-- Same hairstyle
-- Same hair color
-- Same skin tone
-- Same clothing
-- Same clothing colors
-- Same shoes
-- Same accessories
-- Same body proportions
+- same face
+- same eyes
+- same hairstyle
+- same hair color
+- same skin tone
+- same age
+- same clothing
+- same clothing colors
+- same shoes
+- same body proportions
 
-Use a simple neutral background.
+Show the character from head to toe.
 
-Do not add written labels or text.
+ART STYLE:
 
-This image will be used as the visual reference
-for all subsequent storybook pages.
+Colorful children's picture book illustration,
+warm friendly atmosphere,
+polished digital artwork,
+soft lighting,
+clean shapes,
+expressive face,
+high quality,
+consistent character design.
+
+BACKGROUND:
+
+Simple clean light background.
+
+IMPORTANT:
+
+This is a character reference sheet.
+
+Do NOT include:
+
+- text
+- letters
+- captions
+- labels
+- speech bubbles
+- watermark
+- logo
 """
 
-    response = client.models.generate_images(
-        model=IMAGE_MODEL,
-        prompt=prompt,
-        config={
-            "number_of_images": 1,
-            "aspect_ratio": "3:4"
-        }
+    return generate_image(
+        prompt,
+        output_path
     )
 
-    generated = response.generated_images[0]
-
-    image_bytes = generated.image.image_bytes
-
-    with open(
-        output_path,
-        "wb"
-    ) as file:
-
-        file.write(image_bytes)
-
-    return output_path
-
-
-# -----------------------------------------
-# GENERATE PAGE IMAGE
-# -----------------------------------------
 
 def generate_page_image(
     character_profile,
@@ -125,151 +145,82 @@ def generate_page_image(
     appearance = character_profile["appearance"]
 
     prompt = f"""
-Create a professional children's storybook
-illustration.
+Create a professional children's picture-book
+illustration for Page {page_number}.
 
-IMPORTANT:
-
-Use the provided character reference image
-as the PRIMARY VISUAL REFERENCE.
-
-The character must remain visually consistent
-with the reference.
-
-CHARACTER:
+MAIN CHARACTER:
 
 Name: {name}
-
 Age: {age}
 
-Fixed appearance:
+FIXED CHARACTER APPEARANCE:
+
 {appearance}
 
+CHARACTER CONSISTENCY IS EXTREMELY IMPORTANT.
 
-CONSISTENCY REQUIREMENTS:
+The character must remain visually consistent
+throughout the entire story.
 
-Keep the following unchanged:
+Keep unchanged:
 
-- Face
-- Eyes
-- Nose
-- Hairstyle
-- Hair color
-- Skin tone
-- Age
-- Clothing
-- Clothing colors
-- Shoes
-- Accessories
-- Body proportions
+- face
+- eyes
+- hairstyle
+- hair color
+- skin tone
+- age
+- clothing
+- clothing colors
+- shoes
+- accessories
+- body proportions
 
-Do not redesign the character.
+Do NOT redesign the character.
 
-Do not change the character's clothes.
+Do NOT change clothing.
 
-Do not make the character older or younger.
+Do NOT make the character older or younger.
 
-
-PAGE:
-
-Page {page_number}
-
-
-SCENE:
+PAGE SCENE:
 
 {scene_description}
 
-
 VISUAL STYLE:
 
-- colorful children's picture book
-- warm and friendly
-- soft lighting
-- polished illustration
-- expressive characters
-- clean composition
-- consistent artistic style
-- child-friendly
-- high-quality storybook artwork
+Colorful children's picture book illustration,
+warm and friendly atmosphere,
+polished digital artwork,
+soft natural lighting,
+expressive character,
+clean composition,
+consistent art direction,
+child-friendly,
+high quality.
 
+COMPOSITION:
+
+Create a clear storybook scene.
+The main character should be visually prominent.
+The environment should support the story action.
 
 IMPORTANT:
 
-Do NOT add written story text.
+The image must contain ONLY the illustration.
 
-Do NOT add captions.
+Do NOT include:
 
-Do NOT add speech bubbles.
-
-Do NOT add random letters.
-
-The image should contain ONLY the illustration.
+- story text
+- captions
+- labels
+- speech bubbles
+- letters
+- random typography
+- watermark
+- logo
 """
 
-    # Read reference image
-    with open(
-        reference_image_path,
-        "rb"
-    ) as file:
-
-        reference_bytes = file.read()
-
-    # Use Gemini image model with reference image
-    response = client.models.generate_content(
-        model=IMAGE_MODEL,
-        contents=[
-            prompt,
-            {
-                "mime_type": "image/png",
-                "data": reference_bytes
-            }
-        ]
+    return generate_image(
+        prompt,
+        output_path
     )
-
-    # Find generated image
-    image_saved = False
-
-    if hasattr(response, "candidates"):
-
-        for candidate in response.candidates:
-
-            if not hasattr(candidate, "content"):
-                continue
-
-            for part in candidate.content.parts:
-
-                if hasattr(part, "inline_data"):
-
-                    image_data = part.inline_data.data
-
-                    if isinstance(
-                        image_data,
-                        str
-                    ):
-
-                        image_data = base64.b64decode(
-                            image_data
-                        )
-
-                    with open(
-                        output_path,
-                        "wb"
-                    ) as file:
-
-                        file.write(
-                            image_data
-                        )
-
-                    image_saved = True
-                    break
-
-            if image_saved:
-                break
-
-    if not image_saved:
-
-        raise RuntimeError(
-            "Gemini did not return an image."
-        )
-
-    return output_path
