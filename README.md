@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # 📚 AI-Generated Children's Storybook
 
 > An AI-powered web application that automatically creates illustrated children's storybooks from user-provided themes, characters, age groups, and moral lessons.
@@ -705,4 +705,4 @@ https://github.com/aditya280505
 **AI / Generative AI / NLP / Computer Vision / Full-Stack AI Application**
 
 Built as a college **Model Making** project for an AI-generated children's storybook.
->>>>>>> 9e98bcf (Update AI Storybook Generator features)
+
