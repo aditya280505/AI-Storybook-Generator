@@ -1,34 +1,34 @@
-
 # 📚 AI-Generated Children's Storybook
 
-> An AI-powered web application that automatically creates illustrated children's storybooks from user-provided themes, characters, age groups, and moral lessons.
+> An AI-powered web application that creates illustrated children's storybooks based on user-provided themes, characters, age groups, and moral lessons.
 
 ### 🚀 Live Demo
 
-**[▶️ Try the AI Storybook Generator](http://ai-storybook-generator-jfs5ycyxu6dkga23dtyyfw.streamlit.app/)**
-
-### 📌 Project Overview
-
-The application uses **Google Gemini** for story generation, **Hugging Face Inference Providers** for AI-generated illustrations, and **ReportLab** to assemble the final storybook into a PDF.
+**[▶️ Try the AI Storybook Generator](https://ai-storybook-generator-jfs5ycyxu6dkga23dtyyfw.streamlit.app/)**
 
 ---
+
+## 📌 Project Overview
+
+The application uses **Google Gemini** for story generation, **Hugging Face Inference Providers** for AI-generated illustrations, and **ReportLab** to assemble the final storybook into a PDF.
 
 ## 🚀 Features
 
 * ✨ AI-generated children's stories
 * 🎨 AI-generated page illustrations
-* 👦 Consistent character description across pages
+* 👦 Character description consistency across pages
 * 🧒 Age-appropriate story generation
 * 📖 Multi-page storybook creation
 * 💡 Moral-based storytelling
 * 📝 Page-wise scene descriptions
 * 🔄 Prompt iteration and logging
-* 👀 Human review before finalization
+* 👀 Human editorial review
+* 📝 AI Story Reviewer with story improvement and correction capabilities
+* 🔊 AI Voice Narration with English, Hindi, and Marathi support
 * 📄 Automatic PDF storybook generation
-* 🌐 Streamlit-based interactive web interface
-
-
----
+* 📚 Story Library for managing generated stories
+* 📊 Story analytics
+* 🌐 Interactive Streamlit web interface
 
 ## 🏗️ Project Architecture
 
@@ -45,33 +45,35 @@ Page-wise Scene Descriptions
   ↓
 Hugging Face Inference Providers
   ↓
-AI Illustrations
+AI-Generated Illustrations
   ↓
-Human Review
+AI Story Reviewer & Human Review
+  ↓
+AI Voice Narration
+  ↓
+Story Library & Analytics
   ↓
 ReportLab PDF Generator
   ↓
-📖 Final Storybook PDF
+📖 Final Illustrated Storybook
 ```
-
----
 
 ## 🛠️ Technologies Used
 
-| Technology                       | Purpose                                |
-| -------------------------------- | -------------------------------------- |
-| Python                           | Core programming language              |
-| Streamlit                        | Web application interface              |
-| Google Gemini API                | Story and content generation           |
-| Hugging Face Inference Providers | AI image generation                    |
-| FLUX.1-schnell                   | Storybook illustration generation      |
-| Pillow                           | Image processing                       |
-| ReportLab                        | PDF generation                         |
-| JSON                             | Structured story and prompt data       |
-| python-dotenv                    | Environment variable management        |
-| Git & GitHub                     | Version control and repository hosting |
-
----
+| Technology                       | Purpose                                 |
+| -------------------------------- | --------------------------------------- |
+| Python                           | Core programming language               |
+| Streamlit                        | Interactive web application             |
+| Google Gemini API                | Story generation and AI-powered content |
+| Hugging Face Inference Providers | AI image generation                     |
+| FLUX.1-schnell                   | Storybook illustration generation       |
+| gTTS                             | Text-to-speech narration                |
+| Pillow                           | Image processing                        |
+| ReportLab                        | PDF generation                          |
+| Pandas                           | Data processing and analytics           |
+| JSON                             | Structured story and prompt data        |
+| python-dotenv                    | Environment variable management         |
+| Git & GitHub                     | Version control and repository hosting  |
 
 ## 📂 Project Structure
 
@@ -80,15 +82,20 @@ AI_STORYBOOK/
 │
 ├── app.py
 ├── requirements.txt
-├── .env
+├── README.md
 ├── .gitignore
+├── .env.example
 │
 ├── modules/
 │   ├── __init__.py
 │   ├── story_generator.py
 │   ├── image_generator.py
 │   ├── pdf_generator.py
-│   └── prompt_logger.py
+│   ├── prompt_logger.py
+│   ├── story_analytics.py
+│   ├── story_library.py
+│   ├── story_reviewer.py
+│   └── voice_narrator.py
 │
 ├── assets/
 │   └── images/
@@ -96,13 +103,11 @@ AI_STORYBOOK/
 └── output/
 ```
 
----
-
 ## ⚙️ How It Works
 
 ### 1. Story Configuration
 
-The user selects:
+Users configure their story by selecting:
 
 * Story theme
 * Target age group
@@ -118,13 +123,13 @@ Google Gemini generates a structured children's story containing:
 
 * Story title
 * Character profile
-* Moral
+* Moral lesson
 * Page-wise story text
 * Page-wise scene descriptions
 
 ### 3. Character Consistency
 
-A fixed character profile is created containing important visual attributes such as:
+A character profile defines important visual attributes, including:
 
 * Face
 * Hair
@@ -135,13 +140,13 @@ A fixed character profile is created containing important visual attributes such
 * Age
 * Body proportions
 
-These attributes are repeatedly included in illustration prompts to improve visual consistency.
+These attributes are included in illustration prompts to help maintain a consistent character appearance across pages.
 
 ### 4. AI Illustration Generation
 
-Hugging Face Inference Providers are used to generate illustrations from the page scene descriptions.
+Hugging Face Inference Providers generate illustrations based on page-wise scene descriptions.
 
-The application generates:
+Example output files:
 
 ```text
 character_reference.jpg
@@ -151,102 +156,115 @@ page_3.jpg
 ...
 ```
 
-### 5. Human Editorial Review
+### 5. AI Story Reviewer
 
-Generated stories and illustrations can be reviewed before creating the final book.
+The AI Story Reviewer helps evaluate and improve generated stories by examining:
 
-This keeps the human in control of:
-
-* Story quality
-* Visual quality
-* Character consistency
+* Grammar and writing quality
 * Age appropriateness
-* Final selection
+* Character consistency
+* Story flow
+* Moral clarity
 
-### 6. PDF Generation
+It also provides feedback and AI-assisted story corrections.
 
-ReportLab combines the generated text and illustrations into a final illustrated storybook PDF.
+### 6. AI Voice Narration
 
----
+The voice narration feature converts story text into audio.
+
+* Generate narration for a story
+* Listen to the generated audio
+* Download narration as an MP3 file
+* Choose from supported languages: English, Hindi, and Marathi
+
+The narration feature uses gTTS and requires an internet connection.
+
+### 7. Story Library and Analytics
+
+The application includes modules for story management and analytics, helping organize generated stories and analyze story-related information.
+
+### 8. PDF Generation
+
+ReportLab combines story text and illustrations into a final illustrated storybook PDF.
 
 ## 🔐 Environment Variables
 
-Create a `.env` file locally:
+Create a local `.env` file containing your API credentials:
 
 ```env
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-GEMINI_TEXT_MODEL=gemini-3.5-flash-lite
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_TEXT_MODEL=your_gemini_model_name
 
-HF_TOKEN=YOUR_HUGGINGFACE_TOKEN
+HF_TOKEN=your_huggingface_token
 HF_IMAGE_MODEL=black-forest-labs/FLUX.1-schnell
 ```
 
-**Never commit API keys to GitHub.**
+**Never upload your actual API keys or `.env` file to GitHub.**
 
-For Streamlit Cloud deployment, add these values through:
-
-```text
-Streamlit Cloud
-→ Manage App
-→ Settings
-→ Secrets
-```
-
----
+For Streamlit Community Cloud deployment, configure credentials through the application's Secrets settings.
 
 ## 📦 Installation
 
-Clone the repository:
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/aditya280505/AI-Storybook-Generator.git
 ```
 
-Navigate to the project:
+### 2. Navigate to the Project Directory
 
 ```bash
 cd AI-Storybook-Generator
 ```
 
-Create a virtual environment:
+### 3. Create a Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
-Activate it on Windows:
+### 4. Activate the Virtual Environment
+
+**Windows PowerShell:**
 
 ```powershell
-.\venv\Scripts\activate
+.\venv\Scripts\Activate.ps1
 ```
 
-Install dependencies:
+**Windows Command Prompt:**
+
+```cmd
+venv\Scripts\activate.bat
+```
+
+### 5. Install Dependencies
 
 ```bash
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
----
+### 6. Configure Environment Variables
+
+Create the `.env` file in the project root and add your API credentials.
 
 ## ▶️ Run the Application
 
-Start Streamlit:
+Start the Streamlit application:
 
 ```bash
 python -m streamlit run app.py
 ```
 
-The application will open at:
+Open the application in your browser:
 
 ```text
 http://localhost:8501
 ```
 
----
-
 ## 📖 Example
 
-Example configuration:
+Example story configuration:
 
 ```text
 Theme: Adventure
@@ -257,23 +275,27 @@ Pages: 6
 Moral: Friendship and kindness make every adventure better.
 ```
 
-The system generates:
+The application follows this workflow:
 
 ```text
-Story
-   ↓
+Story Configuration
+        ↓
+AI Story Generation
+        ↓
 Character Profile
-   ↓
-Scene Descriptions
-   ↓
-Character Reference
-   ↓
-Page Illustrations
-   ↓
+        ↓
+Page-wise Scene Descriptions
+        ↓
+AI Illustrations
+        ↓
+Story Review and Corrections
+        ↓
+Voice Narration
+        ↓
+Story Library
+        ↓
 Final PDF Storybook
 ```
-
----
 
 ## 🧠 Prompt Engineering
 
@@ -284,9 +306,9 @@ The project uses structured prompts to improve:
 * Visual style consistency
 * Scene accuracy
 * Story progression
-* Removal of unwanted text from images
+* Reduction of unwanted text in images
 
-Prompt iterations can be recorded using the prompt logging module.
+Prompt iterations can be recorded through the prompt logging module.
 
 Each log can contain:
 
@@ -299,410 +321,51 @@ Solution
 Timestamp
 ```
 
----
+## ⚠️ Current Limitations
 
-## ⚠️ Current Limitation
+The illustration pipeline primarily uses prompt-based character consistency.
 
-The current illustration pipeline primarily uses **prompt-based character consistency**.
-
-The character's fixed visual attributes are repeatedly provided to the image model. This improves consistency, but it is not equivalent to advanced reference-image conditioning.
+The character's visual attributes are repeatedly provided to the image model. This can improve consistency but does not guarantee identical character appearances across all illustrations.
 
 Common image-generation challenges include:
 
-* Character appearance variations
-* Different facial features
+* Variations in character appearance
+* Changes in facial features
 * Clothing inconsistencies
-* Hand and finger errors
+* Hand and finger generation errors
 * Background variations
 * Unwanted text appearing in images
 
-These limitations are documented as part of the project's prompt-engineering and model-evaluation process.
-
----
+These limitations are part of the project's prompt-engineering and model-evaluation considerations.
 
 ## 🎯 Problem Statement Coverage
 
-This project addresses the following requirements:
-
-| Requirement                      | Implementation                         |
-| -------------------------------- | -------------------------------------- |
-| Choose theme                     | Streamlit input                        |
-| Generate age-appropriate story   | Google Gemini                          |
-| Consistent characters            | Character profile + structured prompts |
-| Illustrate each page             | Hugging Face image generation          |
-| Prompt iterations                | Prompt logging module                  |
-| Assemble storybook               | ReportLab                              |
-| Character consistency reflection | Prompt-based consistency               |
-| Hands/text-in-image challenges   | Negative prompt instructions           |
-| Human editorial control          | Review before PDF generation           |
-
----
+| Requirement                              | Implementation                            |
+| ---------------------------------------- | ----------------------------------------- |
+| Choose a story theme                     | Streamlit input                           |
+| Generate age-appropriate stories         | Google Gemini                             |
+| Maintain character consistency           | Character profiles and structured prompts |
+| Illustrate each page                     | Hugging Face image generation             |
+| Record prompt iterations                 | Prompt logging module                     |
+| Review and improve stories               | AI Story Reviewer                         |
+| Generate story narration                 | gTTS                                      |
+| Manage generated stories                 | Story Library module                      |
+| Analyze story-related information        | Story Analytics module                    |
+| Assemble the storybook                   | ReportLab                                 |
+| Address image-generation inconsistencies | Prompt engineering and evaluation         |
+| Maintain human editorial control         | Story review before finalization          |
 
 ## 👨‍💻 Author
 
 **Aditya Borgaonkar**
+
 B.Tech Computer Science Engineering — Artificial Intelligence & Analytics
 
 * **GitHub:** https://github.com/aditya280505
 * **LinkedIn:** https://linkedin.com/in/adityaborgaonkar280505/
 
----
-
-
-
 ## 📌 Project Type
 
 **AI / Generative AI / NLP / Computer Vision / Full-Stack AI Application**
 
-Built as a college **Model Making** project for an AI-generated children's storybook.
-=======
-# 📚 AI-Generated Children's Storybook
-
-An AI-powered web application that automatically creates **illustrated children's storybooks** from user-provided themes, characters, age groups, and moral lessons.
-
-The application uses **Google Gemini** for story generation, **Hugging Face Inference Providers** for AI-generated illustrations, and **ReportLab** to assemble the final storybook into a PDF.
-
----
-
-## 🚀 Features
-
-* ✨ AI-generated children's stories
-* 🎨 AI-generated page illustrations
-* 👦 Consistent character description across pages
-* 🧒 Age-appropriate story generation
-* 📖 Multi-page storybook creation
-* 💡 Moral-based storytelling
-* 📝 Page-wise scene descriptions
-* 🔄 Prompt iteration and logging
-* 👀 Human review before finalization
-* 📄 Automatic PDF storybook generation
-* 🌐 Streamlit-based interactive web interface
-
----
-
-## 🏗️ Project Architecture
-
-```text
-User
-  ↓
-Story Configuration
-  ↓
-Google Gemini
-  ↓
-Structured Story + Character Profile
-  ↓
-Page-wise Scene Descriptions
-  ↓
-Hugging Face Inference Providers
-  ↓
-AI Illustrations
-  ↓
-Human Review
-  ↓
-ReportLab PDF Generator
-  ↓
-📖 Final Storybook PDF
-```
-
----
-
-## 🛠️ Technologies Used
-
-| Technology                       | Purpose                                |
-| -------------------------------- | -------------------------------------- |
-| Python                           | Core programming language              |
-| Streamlit                        | Web application interface              |
-| Google Gemini API                | Story and content generation           |
-| Hugging Face Inference Providers | AI image generation                    |
-| FLUX.1-schnell                   | Storybook illustration generation      |
-| Pillow                           | Image processing                       |
-| ReportLab                        | PDF generation                         |
-| JSON                             | Structured story and prompt data       |
-| python-dotenv                    | Environment variable management        |
-| Git & GitHub                     | Version control and repository hosting |
-
----
-
-## 📂 Project Structure
-
-```text
-AI_STORYBOOK/
-│
-├── app.py
-├── requirements.txt
-├── .env
-├── .gitignore
-│
-├── modules/
-│   ├── __init__.py
-│   ├── story_generator.py
-│   ├── image_generator.py
-│   ├── pdf_generator.py
-│   └── prompt_logger.py
-│
-├── assets/
-│   └── images/
-│
-└── output/
-```
-
----
-
-## ⚙️ How It Works
-
-### 1. Story Configuration
-
-The user selects:
-
-* Story theme
-* Target age group
-* Character name
-* Character age
-* Character appearance
-* Moral lesson
-* Number of pages
-
-### 2. AI Story Generation
-
-Google Gemini generates a structured children's story containing:
-
-* Story title
-* Character profile
-* Moral
-* Page-wise story text
-* Page-wise scene descriptions
-
-### 3. Character Consistency
-
-A fixed character profile is created containing important visual attributes such as:
-
-* Face
-* Hair
-* Eyes
-* Skin tone
-* Clothing
-* Shoes
-* Age
-* Body proportions
-
-These attributes are repeatedly included in illustration prompts to improve visual consistency.
-
-### 4. AI Illustration Generation
-
-Hugging Face Inference Providers are used to generate illustrations from the page scene descriptions.
-
-The application generates:
-
-```text
-character_reference.jpg
-page_1.jpg
-page_2.jpg
-page_3.jpg
-...
-```
-
-### 5. Human Editorial Review
-
-Generated stories and illustrations can be reviewed before creating the final book.
-
-This keeps the human in control of:
-
-* Story quality
-* Visual quality
-* Character consistency
-* Age appropriateness
-* Final selection
-
-### 6. PDF Generation
-
-ReportLab combines the generated text and illustrations into a final illustrated storybook PDF.
-
----
-
-## 🔐 Environment Variables
-
-Create a `.env` file locally:
-
-```env
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-GEMINI_TEXT_MODEL=gemini-3.5-flash-lite
-
-HF_TOKEN=YOUR_HUGGINGFACE_TOKEN
-HF_IMAGE_MODEL=black-forest-labs/FLUX.1-schnell
-```
-
-**Never commit API keys to GitHub.**
-
-For Streamlit Cloud deployment, add these values through:
-
-```text
-Streamlit Cloud
-→ Manage App
-→ Settings
-→ Secrets
-```
-
----
-
-## 📦 Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/aditya280505/AI-Storybook-Generator.git
-```
-
-Navigate to the project:
-
-```bash
-cd AI-Storybook-Generator
-```
-
-Create a virtual environment:
-
-```bash
-python -m venv venv
-```
-
-Activate it on Windows:
-
-```powershell
-.\venv\Scripts\activate
-```
-
-Install dependencies:
-
-```bash
-python -m pip install -r requirements.txt
-```
-
----
-
-## ▶️ Run the Application
-
-Start Streamlit:
-
-```bash
-python -m streamlit run app.py
-```
-
-The application will open at:
-
-```text
-http://localhost:8501
-```
-
----
-
-## 📖 Example
-
-Example configuration:
-
-```text
-Theme: Adventure
-Age Group: 6–8
-Character: Milo
-Character Age: 7
-Pages: 6
-Moral: Friendship and kindness make every adventure better.
-```
-
-The system generates:
-
-```text
-Story
-   ↓
-Character Profile
-   ↓
-Scene Descriptions
-   ↓
-Character Reference
-   ↓
-Page Illustrations
-   ↓
-Final PDF Storybook
-```
-
----
-
-## 🧠 Prompt Engineering
-
-The project uses structured prompts to improve:
-
-* Character consistency
-* Age appropriateness
-* Visual style consistency
-* Scene accuracy
-* Story progression
-* Removal of unwanted text from images
-
-Prompt iterations can be recorded using the prompt logging module.
-
-Each log can contain:
-
-```text
-Page
-Iteration
-Prompt
-Detected Issue
-Solution
-Timestamp
-```
-
----
-
-## ⚠️ Current Limitation
-
-The current illustration pipeline primarily uses **prompt-based character consistency**.
-
-The character's fixed visual attributes are repeatedly provided to the image model. This improves consistency, but it is not equivalent to advanced reference-image conditioning.
-
-Common image-generation challenges include:
-
-* Character appearance variations
-* Different facial features
-* Clothing inconsistencies
-* Hand and finger errors
-* Background variations
-* Unwanted text appearing in images
-
-These limitations are documented as part of the project's prompt-engineering and model-evaluation process.
-
----
-
-## 🎯 Problem Statement Coverage
-
-This project addresses the following requirements:
-
-| Requirement                      | Implementation                         |
-| -------------------------------- | -------------------------------------- |
-| Choose theme                     | Streamlit input                        |
-| Generate age-appropriate story   | Google Gemini                          |
-| Consistent characters            | Character profile + structured prompts |
-| Illustrate each page             | Hugging Face image generation          |
-| Prompt iterations                | Prompt logging module                  |
-| Assemble storybook               | ReportLab                              |
-| Character consistency reflection | Prompt-based consistency               |
-| Hands/text-in-image challenges   | Negative prompt instructions           |
-| Human editorial control          | Review before PDF generation           |
-
----
-
-## 👨‍💻 Author
-
-**Aditya Borgaonkar**
-
-B.Tech Computer Science Engineering
-Artificial Intelligence & Analytics
-
-GitHub:
-https://github.com/aditya280505
-
----
-
-## 📌 Project Type
-
-**AI / Generative AI / NLP / Computer Vision / Full-Stack AI Application**
-
-Built as a college **Model Making** project for an AI-generated children's storybook.
-
+Developed as a college **Model Making** project for generating illustrated children's storybooks.
